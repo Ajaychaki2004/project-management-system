@@ -1,0 +1,36 @@
+{
+  "name": "product-management-backend",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run prisma:generate && concurrently -n backend,frontend -c green,blue \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "nodemon backend/index.js",
+    "start:frontend": "npm run dev -w frontend",
+    "prisma:generate": "prisma generate --schema backend/prisma/schema.prisma",
+    "postinstall": "npm run prisma:generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.6.0",
+    "@prisma/client": "^7.6.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "prisma": "^7.6.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
