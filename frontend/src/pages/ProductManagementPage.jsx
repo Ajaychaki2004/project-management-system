@@ -11,6 +11,14 @@ function ProductManagementPage() {
   const [editingId, setEditingId] = useState(null);
   const [editingForm, setEditingForm] = useState({ name: "", price: "" });
   const [loading, setLoading] = useState(false);
+  const [confirmState, setConfirmState] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmLabel: "Confirm",
+    tone: "danger",
+    onConfirm: null,
+  });
   const { showToast } = useToast();
 
   const currentUser = useMemo(() => parseJwt(getToken()), []);
@@ -97,6 +105,55 @@ function ProductManagementPage() {
     setEditingForm({ name: product.name, price: String(product.price) });
   };
 
+  const closeConfirmModal = () => {
+    setConfirmState((prev) => ({ ...prev, open: false, onConfirm: null }));
+  };
+
+  const openConfirmModal = ({ title, message, confirmLabel, onConfirm, tone = "danger" }) => {
+    setConfirmState({
+      open: true,
+      title,
+      message,
+      confirmLabel,
+      tone,
+      onConfirm,
+    });
+  };
+
+  const confirmDeleteProduct = (product) => {
+    openConfirmModal({
+      title: "Delete product?",
+      message: `${product.name} will be permanently removed. This action cannot be undone.`,
+      confirmLabel: "Delete",
+      tone: "danger",
+      onConfirm: async () => {
+        await onDeleteProduct(product.id);
+      },
+    });
+  };
+
+  const requestLogout = () => {
+    openConfirmModal({
+      title: "Logout?",
+      message: "You will need to sign in again to continue managing products.",
+      confirmLabel: "Logout",
+      tone: "default",
+      onConfirm: () => {
+        logout();
+      },
+    });
+  };
+
+  const handleConfirmAction = async () => {
+    const action = confirmState.onConfirm;
+    if (!action) {
+      return;
+    }
+
+    closeConfirmModal();
+    await action();
+  };
+
   const logout = () => {
     clearToken();
     navigate("/auth", { replace: true });
@@ -179,7 +236,7 @@ function ProductManagementPage() {
                     <button type="button" onClick={() => startEdit(product)}>
                       Edit
                     </button>
-                    <button type="button" className="danger" onClick={() => onDeleteProduct(product.id)}>
+                    <button type="button" className="danger" onClick={() => confirmDeleteProduct(product)}>
                       Delete
                     </button>
                   </div>
@@ -190,11 +247,39 @@ function ProductManagementPage() {
         </div>
 
         <div className="panel-footer-actions">
-          <button type="button" className="ghost-btn" onClick={logout}>
+          <button type="button" className="ghost-btn" onClick={requestLogout}>
             Logout
           </button>
         </div>
       </section>
+
+      {confirmState.open ? (
+        <div className="modal-backdrop" role="presentation" onClick={closeConfirmModal}>
+          <div
+            className="confirm-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-modal-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="confirm-modal-title">{confirmState.title}</h2>
+            <p>{confirmState.message}</p>
+            <div className="confirm-modal-actions">
+              <button type="button" className="ghost-btn" onClick={closeConfirmModal} disabled={loading}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={confirmState.tone === "danger" ? "danger" : ""}
+                onClick={handleConfirmAction}
+                disabled={loading}
+              >
+                {confirmState.confirmLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
