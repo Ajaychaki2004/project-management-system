@@ -17,6 +17,16 @@ A full-stack product management application with:
 - npm 9+
 - PostgreSQL database (Supabase/Neon/local)
 
+
+## Initial Setup
+
+Clone the repository and move into the project folder:
+
+```bash
+git clone https://github.com/Ajaychaki2004/project-management-system.git
+cd project-management-system
+```
+
 ## Environment Setup
 
 Create/update `.env` in the project root:
@@ -26,9 +36,7 @@ DATABASE_URL="postgresql://<username>:<password>@<host>:5432/<database>?uselibpq
 JWT_SECRET="your_jwt_secret"
 ```
 
-## Initial Setup
-
-From the project root:
+Then install dependencies from the project root:
 
 ```bash
 npm install
