@@ -53,6 +53,237 @@
   color: #445267;
 }
 
+.pm-page-shell {
+  min-height: 100vh;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 30px 24px;
+}
+
+.pm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pm-header h1 {
+  margin: 0;
+  font-size: 2.6rem;
+  color: #1d2e47;
+  letter-spacing: -0.02em;
+}
+
+.pm-header p {
+  margin: 4px 0 0;
+  color: #597089;
+  font-size: 0.95rem;
+}
+
+.pm-logout-btn {
+  border: 1px solid #d9e4ef;
+  border-radius: 9px;
+  background: #f4f8fc;
+  color: #68819b;
+  font-weight: 600;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+.pm-separator {
+  border: 0;
+  border-top: 1px solid #dce5ee;
+  margin: 20px 0 26px;
+}
+
+.pm-content-grid {
+  display: grid;
+  grid-template-columns: 263px 1fr;
+  gap: 26px;
+}
+
+.pm-card {
+  border: 1px solid #d7e1eb;
+  background: #ffffff;
+  border-radius: 11px;
+  box-shadow: 0 1px 0 rgba(25, 44, 68, 0.02);
+}
+
+.pm-add-product-card {
+  padding: 22px;
+  height: fit-content;
+}
+
+.pm-add-product-card h2 {
+  margin: 0 0 16px;
+  padding-left: 12px;
+  border-left: 3px solid #5a6df6;
+  color: #1f2f47;
+  font-size: 2rem;
+}
+
+.pm-form {
+  display: grid;
+  gap: 14px;
+}
+
+.pm-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #3b4f68;
+  font-weight: 700;
+}
+
+.pm-form input,
+.pm-edit-fields input {
+  width: 100%;
+  border: 1px solid #d4ddea;
+  border-radius: 7px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 0.95rem;
+  color: #20354f;
+  background: #f7f9fc;
+}
+
+.pm-form input:focus,
+.pm-edit-fields input:focus {
+  outline: 2px solid rgba(42, 124, 235, 0.22);
+  border-color: #5b84e8;
+}
+
+.pm-primary-btn {
+  border: 0;
+  border-radius: 9px;
+  height: 31px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(90deg, #2e86e7 0%, #1e66c2 100%);
+}
+
+.pm-primary-btn:disabled,
+.pm-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pm-right-panel {
+  min-width: 0;
+}
+
+.pm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+  margin-bottom: 17px;
+}
+
+.pm-stat-card {
+  min-height: 86px;
+  padding: 16px;
+}
+
+.pm-stat-card p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.76rem;
+  color: #6e8094;
+  font-weight: 700;
+}
+
+.pm-stat-card h3 {
+  margin: 8px 0 0;
+  font-size: 2rem;
+  color: #20334d;
+}
+
+.pm-products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.pm-product-card {
+  padding: 16px;
+}
+
+.pm-product-meta h3 {
+  margin: 0;
+  color: #1f2f46;
+  font-size: 1.4rem;
+}
+
+.pm-product-meta p {
+  margin: 10px 0 0;
+  color: #6b76ef;
+  font-weight: 700;
+  display: inline-block;
+  border-radius: 999px;
+  background: #eff0ff;
+  padding: 3px 9px;
+}
+
+.pm-card-actions {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.pm-edit-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.pm-pagination-wrap {
+  margin-top: 24px;
+}
+
+.pm-pagination-wrap .pm-separator {
+  margin: 0 0 17px;
+}
+
+.pm-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  color: #7a8ca1;
+  font-size: 0.86rem;
+}
+
+.pm-page-btn {
+  border: 1px solid #dbe4ee;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #7b8da3;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  height: 30px;
+  min-width: 78px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.pm-products-grid .empty {
+  margin: 0;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 34px 12px;
+  border: 1px dashed #cdd8e5;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
 .auth-shell {
   display: grid;
   place-items: center;
@@ -388,6 +619,34 @@ input:focus {
 @media (max-width: 960px) {
   .page-shell {
     padding: 22px 14px 20px;
+  }
+
+  .pm-page-shell {
+    padding: 22px 14px 18px;
+  }
+
+  .pm-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pm-header h1 {
+    font-size: 1.95rem;
+  }
+
+  .pm-content-grid,
+  .pm-stats-grid,
+  .pm-products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pm-pagination {
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .pm-pagination span {
+    font-size: 0.8rem;
   }
 
   .auth-page-panel {

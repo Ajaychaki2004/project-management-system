@@ -7,6 +7,7 @@ import { useToast } from "../components/ToastProvider";
 function ProductManagementPage() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [newProduct, setNewProduct] = useState({ name: "", price: "" });
   const [editingId, setEditingId] = useState(null);
   const [editingForm, setEditingForm] = useState({ name: "", price: "" });
@@ -22,6 +23,17 @@ function ProductManagementPage() {
   const { showToast } = useToast();
 
   const currentUser = useMemo(() => parseJwt(getToken()), []);
+  const productsPerPage = 6;
+
+  const totalProducts = products.length;
+  const inventoryValue = products.reduce((total, product) => {
+    const value = Number(product.price);
+    return total + (Number.isNaN(value) ? 0 : value);
+  }, 0);
+
+  const totalPages = Math.max(1, Math.ceil(totalProducts / productsPerPage));
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const pagedProducts = products.slice(startIndex, startIndex + productsPerPage);
 
   const loadProducts = async () => {
     try {
@@ -40,6 +52,12 @@ function ProductManagementPage() {
     loadProducts();
   }, []);
 
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   const onCreateProduct = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -55,6 +73,7 @@ function ProductManagementPage() {
       );
       setNewProduct({ name: "", price: "" });
       showToast("Product created.", "success");
+      setCurrentPage(1);
       await loadProducts();
     } catch (error) {
       showToast(error.message, "error");
@@ -160,96 +179,143 @@ function ProductManagementPage() {
   };
 
   return (
-    <main className="page-shell">
-      <div className="glow glow-left" />
-      <div className="glow glow-right" />
-
-      <section className="panel top-panel">
-        <h1>Product Management</h1>
-        <p>Track products, update prices, and maintain inventory for your account.</p>
-      </section>
-
-      <section className="panel products-panel">
-        <div className="panel-toolbar">
-          <span>Logged in as {currentUser?.email || "User"}</span>
+    <main className="pm-page-shell">
+      <header className="pm-header">
+        <div>
+          <h1>Product Management</h1>
+          <p>Logged in as {currentUser?.email || "User"}</p>
         </div>
+        <button type="button" className="pm-logout-btn" onClick={requestLogout}>
+          Logout
+        </button>
+      </header>
 
-        <form onSubmit={onCreateProduct} className="product-form">
-          <input
-            type="text"
-            placeholder="Product name"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct((prev) => ({ ...prev, name: e.target.value }))}
-            required
-          />
-          <input
-            type="number"
-            placeholder="Price"
-            value={newProduct.price}
-            onChange={(e) => setNewProduct((prev) => ({ ...prev, price: e.target.value }))}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            Add Product
-          </button>
-        </form>
+      <hr className="pm-separator" />
 
-        <div className="product-list">
-          {products.length === 0 ? <p className="empty">No products yet.</p> : null}
-          {products.map((product) => (
-            <div className="product-card" key={product.id}>
-              {editingId === product.id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingForm.name}
-                    onChange={(e) => setEditingForm((prev) => ({ ...prev, name: e.target.value }))}
-                  />
-                  <input
-                    type="number"
-                    value={editingForm.price}
-                    onChange={(e) => setEditingForm((prev) => ({ ...prev, price: e.target.value }))}
-                  />
-                  <div className="card-actions">
-                    <button type="button" onClick={() => onUpdateProduct(product.id)}>
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      className="ghost-btn"
-                      onClick={() => {
-                        setEditingId(null);
-                        setEditingForm({ name: "", price: "" });
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <h3>{product.name}</h3>
-                    <p>Rs. {product.price}</p>
-                  </div>
-                  <div className="card-actions">
-                    <button type="button" onClick={() => startEdit(product)}>
-                      Edit
-                    </button>
-                    <button type="button" className="danger" onClick={() => confirmDeleteProduct(product)}>
-                      Delete
-                    </button>
-                  </div>
-                </>
-              )}
+      <section className="pm-content-grid">
+        <article className="pm-card pm-add-product-card">
+          <h2>Add New Product</h2>
+          <form onSubmit={onCreateProduct} className="pm-form">
+            <label>
+              Product Name
+              <input
+                type="text"
+                placeholder="e.g Macbook Pro"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct((prev) => ({ ...prev, name: e.target.value }))}
+                required
+              />
+            </label>
+            <label>
+              Price (Rs.)
+              <input
+                type="number"
+                placeholder="0.00"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct((prev) => ({ ...prev, price: e.target.value }))}
+                required
+              />
+            </label>
+            <button type="submit" className="pm-primary-btn" disabled={loading}>
+              Create Product
+            </button>
+          </form>
+        </article>
+
+        <div className="pm-right-panel">
+          <div className="pm-stats-grid">
+            <article className="pm-card pm-stat-card">
+              <p>Total Products</p>
+              <h3>{totalProducts}</h3>
+            </article>
+            <article className="pm-card pm-stat-card">
+              <p>Inventory Value</p>
+              <h3>Rs. {inventoryValue.toLocaleString("en-IN")}</h3>
+            </article>
+          </div>
+
+          <div className="pm-products-grid">
+            {pagedProducts.length === 0 ? <p className="empty">No products yet.</p> : null}
+            {pagedProducts.map((product) => (
+              <article className="pm-card pm-product-card" key={product.id}>
+                {editingId === product.id ? (
+                  <>
+                    <div className="pm-edit-fields">
+                      <input
+                        type="text"
+                        value={editingForm.name}
+                        onChange={(e) => setEditingForm((prev) => ({ ...prev, name: e.target.value }))}
+                      />
+                      <input
+                        type="number"
+                        value={editingForm.price}
+                        onChange={(e) => setEditingForm((prev) => ({ ...prev, price: e.target.value }))}
+                      />
+                    </div>
+                    <div className="pm-card-actions">
+                      <button type="button" className="pm-primary-btn" onClick={() => onUpdateProduct(product.id)}>
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="pm-primary-btn"
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditingForm({ name: "", price: "" });
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="pm-product-meta">
+                      <h3>{product.name}</h3>
+                      <p>Rs. {Number(product.price).toLocaleString("en-IN")}</p>
+                    </div>
+                    <div className="pm-card-actions">
+                      <button type="button" className="pm-primary-btn" onClick={() => startEdit(product)}>
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="pm-primary-btn"
+                        onClick={() => confirmDeleteProduct(product)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <div className="pm-pagination-wrap">
+            <div className="pm-separator" />
+            <div className="pm-pagination">
+              <button
+                type="button"
+                className="pm-page-btn"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                type="button"
+                className="pm-page-btn"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
             </div>
-          ))}
-        </div>
-
-        <div className="panel-footer-actions">
-          <button type="button" className="ghost-btn" onClick={requestLogout}>
-            Logout
-          </button>
+          </div>
         </div>
       </section>
 
